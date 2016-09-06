@@ -1,3 +1,5 @@
+# Following test data and results are based on a 5x5 grid size
+
 PLACE 0,0,N
 MOVE
 MOVE
