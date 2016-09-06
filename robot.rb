@@ -1,54 +1,54 @@
-require 'pry'
+#require 'pry'
 
-class Grid
-  row=0
-  col=0
-  @@board=nil
+class Board
+  attr_reader :length, :width
+
+  @data=nil
 
   def initialize(row=5,col=5)
-    @@board = Array.new(row){Array.new(col){0}}
+    @data = Array.new(row){Array.new(col){0}}
+    @length = @data.length
+    @width = @data[0].length
   end
 
-  def self.length
-    @@board.length
-  end
-
-  def self.width
-    @@board[0].length
-  end
 end
 
 class Robot
+  
   DIRECTIONS={'N' => 'NORTH', 'E' => 'EAST' , 'W' => 'WEST', 'S' => 'SOUTH'}
-  @curr_pos_x=0
-  @curr_pos_y=0
-  @curr_dir=nil
+  attr_accessor :curr_pos_x, :curr_pos_y, :curr_dir
+  
+  def initialize
+    @curr_pos_x=0
+    @curr_pos_y=0
+    @curr_dir=nil
+  end
 
-  def move
+  def move(board)
     case @curr_dir
         when DIRECTIONS.keys[0]
-            if validMove(@curr_pos_x, @curr_pos_y+1)
+            if validMove(@curr_pos_x, @curr_pos_y+1, board)
               @curr_pos_y = @curr_pos_y + 1
             else
                 outOfBounds
             end
         
         when DIRECTIONS.keys[1]
-            if validMove(@curr_pos_x+1, @curr_pos_y)
+            if validMove(@curr_pos_x+1, @curr_pos_y, board)
               @curr_pos_x = @curr_pos_x + 1
             else
               outOfBounds
             end
         
         when DIRECTIONS.keys[2]
-            if validMove(@curr_pos_x-1, @curr_pos_y)
+            if validMove(@curr_pos_x-1, @curr_pos_y, board)
               @curr_pos_x = @curr_pos_x - 1
             else
               outOfBounds
             end
         
         when DIRECTIONS.keys[3]
-            if validMove(@curr_pos_x, @curr_pos_y-1)
+            if validMove(@curr_pos_x, @curr_pos_y-1, board)
               @curr_pos_y = @curr_pos_y - 1
             else
               outOfBounds
@@ -69,7 +69,6 @@ class Robot
           
           when DIRECTIONS.keys[3]
               @curr_dir = DIRECTIONS.keys[1]
-          
     end      
   end
 
@@ -86,7 +85,6 @@ class Robot
         
         when DIRECTIONS.keys[3]
             @curr_dir = DIRECTIONS.keys[2]
-        
       end
   end
 
@@ -100,8 +98,8 @@ class Robot
     end
   end
 
-  def place(x=0,y=0,f='N')
-    if validMove(x,y) 
+  def place(x=0,y=0,f='N',board)
+    if validMove(x,y,board) 
         if changeDirection(f)
             @curr_pos_x = x
             @curr_pos_y = y
@@ -115,38 +113,37 @@ class Robot
     end
   end
 
-  def validMove(x,y)
-    x >= 0 && y >= 0 && x < Grid.length && y < Grid.width
+  def validMove(x,y,board)
+    x >= 0 && y >= 0 && x < board.length && y < board.width
   end
 
   def outOfBounds
-    puts "Warnning : Out of bounds move. Please try again."
+    puts "Warning : Out of bounds move. Please try again."
   end
 
   def currentPosition
-    @curr_dir != nil ? " #{@curr_pos_x},#{@curr_pos_y},#{DIRECTIONS[@curr_dir]} " : "Robot is not placed on board yet."
+    @curr_dir != nil ? "#{@curr_pos_x},#{@curr_pos_y},#{DIRECTIONS[@curr_dir]}" : "Robot is not placed on board yet."
   end
 end
 
 class RoboSim
   puts "Welcome to the Robot Simulator."
   
-  def self.initBoard
-    x = 0
-    y = 0
+  def self.init
+    x=y=0
     loop do
       puts "Enter grid length : "
       x = Integer(gets) rescue -1
       puts "Enter grid width : "
       y = Integer(gets) rescue -1
-      puts "x = #{x} y = #{y}"
+      
       if x <= 0 || y <= 0
         puts "Invalid dimension."
       else
         break
       end
     end
-      Grid.new(x,y)
+      @board = Board.new(x,y)
   end
   
   def self.menu
@@ -159,9 +156,9 @@ class RoboSim
   end
 
   @robot = Robot.new
-  RoboSim.initBoard
+  RoboSim.init
 
-  puts "Your playing field is #{Grid.length} x #{Grid.width}"
+  puts "Your playing field is #{@board.length} x #{@board.width}"
 
   loop do 
     RoboSim.menu
@@ -176,9 +173,9 @@ class RoboSim
           x = Integer(params[0].lstrip.rstrip) rescue -1 if params.size > 0 
           y = Integer(params[1].lstrip.rstrip) rescue -1 if params.size > 1
           f = params[2].lstrip.rstrip.upcase if params.size > 2 
-          @robot.place(x,y,f) if x >= 0 && y >= 0
+          @robot.place(x,y,f,@board) if x >= 0 && y >= 0
         when '2'
-            @robot.move
+            @robot.move(@board)
         when '3'
             @robot.left
         when '4'
