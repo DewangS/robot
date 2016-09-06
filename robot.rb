@@ -122,11 +122,11 @@ class Robot
   end
 
   def currentPosition
-    @curr_dir != nil ? "#{@curr_pos_x},#{@curr_pos_y},#{DIRECTIONS[@curr_dir]}" : "Robot is not placed on board yet."
+    @curr_dir != nil ? "#{@curr_pos_x},#{@curr_pos_y},#{DIRECTIONS[@curr_dir]}" : "Robot is not placed on the board yet."
   end
 end
 
-class RoboSim
+class Robosim
   puts "Welcome to the Robot Simulator."
   
   def self.init
@@ -156,12 +156,12 @@ class RoboSim
   end
 
   @robot = Robot.new
-  RoboSim.init
+  Robosim.init
 
   puts "Your playing field is #{@board.length} x #{@board.width}"
 
   loop do 
-    RoboSim.menu
+    Robosim.menu
     choice = gets.chomp
     case choice
         when '0'
