@@ -83,7 +83,7 @@ class TestRoboSim < Test::Unit::TestCase
   def testRobotReport
     robot = Robot.new
     board = Board.new(5,5)
-    assert_equal('Robot is not placed on board yet.', robot.currentPosition)
+    assert_equal('Robot is not placed on the board yet.', robot.currentPosition)
     assert_equal(true, robot.place(0,0,'N',board))
     assert_equal('0,0,NORTH', robot.currentPosition)
     assert_equal(true, robot.place(2,2,'N',board))
